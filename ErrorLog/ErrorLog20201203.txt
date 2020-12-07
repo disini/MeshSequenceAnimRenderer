@@ -1,0 +1,235 @@
+test123
+main()
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_NV_optimus
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_api_dump
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_assistant_layer
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_core_validation
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_device_simulation
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_KHRONOS_validation
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_monitor
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_object_tracker
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_screenshot
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_standard_validation
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_parameter_validation
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_GOOGLE_threading
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_GOOGLE_unique_objects
+LOG:  GetInstanceLayersAndExtensions          :237  - Found instance layer VK_LAYER_LUNARG_vktrace
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_device_group_creation
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_display
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_external_fence_capabilities
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_external_memory_capabilities
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_external_semaphore_capabilities
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_get_display_properties2
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_get_physical_device_properties2
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_get_surface_capabilities2
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_surface
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_surface_protected_capabilities
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_xcb_surface
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_KHR_xlib_surface
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_EXT_acquire_xlib_display
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_EXT_debug_report
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_EXT_debug_utils
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_EXT_direct_mode_display
+LOG:  GetInstanceLayersAndExtensions          :241  - Found instance extension VK_EXT_display_surface_counter
+LOG:  GetInstanceLayersAndExtensions          :280  Using instance layers
+LOG:  GetInstanceLayersAndExtensions          :282  * VK_LAYER_GOOGLE_threading
+LOG:  GetInstanceLayersAndExtensions          :282  * VK_LAYER_LUNARG_parameter_validation
+LOG:  GetInstanceLayersAndExtensions          :282  * VK_LAYER_LUNARG_object_tracker
+LOG:  GetInstanceLayersAndExtensions          :282  * VK_LAYER_LUNARG_core_validation
+LOG:  GetInstanceLayersAndExtensions          :282  * VK_LAYER_GOOGLE_unique_objects
+LOG:  GetInstanceLayersAndExtensions          :291  Using instance extensions
+LOG:  GetInstanceLayersAndExtensions          :293  * VK_EXT_debug_report
+LOG:  GetInstanceLayersAndExtensions          :293  * VK_KHR_surface
+LOG:  GetInstanceLayersAndExtensions          :293  * VK_KHR_xcb_surface
+LOG:  CreateInstance                          :180  Vulkan successed to create instance.
+LOG:  SetupDebugLayerCallback                 :62   Setup debug callback success.
+LOG:  SelectAndInitDevice                     :199  Found 1 device(s)
+LOG:  QueryGPU                                :395  Device 0: GeForce RTX 2080 Ti
+LOG:  QueryGPU                                :396  - API 1.2.162(0x4020a2) Driver 0x71cb8080 VendorId 0x10de
+LOG:  QueryGPU                                :397  - DeviceID 0x1e07 Type Discrete GPU
+LOG:  QueryGPU                                :398  - Max Descriptor Sets Bound 32 Timestamps 1
+LOG:  InitGPU                                 :411  Using Device 0: Geometry 1 Tessellation 1
+LOG:  GetDeviceExtensionsAndLayers            :331  - Found device layer VK_LAYER_GOOGLE_threading
+LOG:  GetDeviceExtensionsAndLayers            :331  - Found device layer VK_LAYER_LUNARG_parameter_validation
+LOG:  GetDeviceExtensionsAndLayers            :331  - Found device layer VK_LAYER_LUNARG_object_tracker
+LOG:  GetDeviceExtensionsAndLayers            :331  - Found device layer VK_LAYER_LUNARG_core_validation
+LOG:  GetDeviceExtensionsAndLayers            :331  - Found device layer VK_LAYER_GOOGLE_unique_objects
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_16bit_storage
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_8bit_storage
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_acceleration_structure
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_bind_memory2
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_buffer_device_address
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_copy_commands2
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_create_renderpass2
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_dedicated_allocation
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_deferred_host_operations
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_depth_stencil_resolve
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_descriptor_update_template
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_device_group
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_draw_indirect_count
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_driver_properties
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_external_fence
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_external_fence_fd
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_external_memory
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_external_memory_fd
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_external_semaphore
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_external_semaphore_fd
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_fragment_shading_rate
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_get_memory_requirements2
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_image_format_list
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_imageless_framebuffer
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_maintenance1
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_maintenance2
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_maintenance3
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_multiview
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_pipeline_executable_properties
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_pipeline_library
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_push_descriptor
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_ray_query
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_ray_tracing_pipeline
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_relaxed_block_layout
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_sampler_mirror_clamp_to_edge
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_sampler_ycbcr_conversion
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_separate_depth_stencil_layouts
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_atomic_int64
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_clock
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_draw_parameters
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_float16_int8
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_float_controls
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_non_semantic_info
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_subgroup_extended_types
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_shader_terminate_invocation
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_spirv_1_4
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_storage_buffer_storage_class
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_swapchain
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_swapchain_mutable_format
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_timeline_semaphore
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_uniform_buffer_standard_layout
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_variable_pointers
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_KHR_vulkan_memory_model
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_4444_formats
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_blend_operation_advanced
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_buffer_device_address
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_calibrated_timestamps
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_conditional_rendering
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_conservative_rasterization
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_custom_border_color
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_depth_clip_enable
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_depth_range_unrestricted
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_descriptor_indexing
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_discard_rectangles
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_display_control
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_extended_dynamic_state
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_external_memory_host
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_fragment_shader_interlock
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_global_priority
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_host_query_reset
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_image_robustness
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_index_type_uint8
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_inline_uniform_block
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_line_rasterization
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_memory_budget
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_pci_bus_info
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_pipeline_creation_cache_control
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_pipeline_creation_feedback
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_post_depth_coverage
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_private_data
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_robustness2
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_sample_locations
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_sampler_filter_minmax
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_scalar_block_layout
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_separate_stencil_usage
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_shader_atomic_float
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_shader_demote_to_helper_invocation
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_shader_image_atomic_int64
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_shader_subgroup_ballot
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_shader_subgroup_vote
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_shader_viewport_index_layer
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_subgroup_size_control
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_texel_buffer_alignment
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_tooling_info
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_transform_feedback
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_vertex_attribute_divisor
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_EXT_ycbcr_image_arrays
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_clip_space_w_scaling
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_compute_shader_derivatives
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_cooperative_matrix
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_corner_sampled_image
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_coverage_reduction_mode
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_cuda_kernel_launch
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_dedicated_allocation
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_dedicated_allocation_image_aliasing
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_device_diagnostic_checkpoints
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_device_diagnostics_config
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_device_generated_commands
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_fill_rectangle
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_fragment_coverage_to_color
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_fragment_shader_barycentric
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_fragment_shading_rate_enums
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_framebuffer_mixed_samples
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_geometry_shader_passthrough
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_mesh_shader
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_ray_tracing
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_representative_fragment_test
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_sample_mask_override_coverage
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_scissor_exclusive
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_shader_image_footprint
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_shader_sm_builtins
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_shader_subgroup_partitioned
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_shading_rate_image
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_viewport_array2
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NV_viewport_swizzle
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NVX_binary_import
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NVX_image_view_handle
+LOG:  GetDeviceExtensionsAndLayers            :335  - Found device extension VK_NVX_multiview_per_view_attributes
+LOG:  GetDeviceExtensionsAndLayers            :412  Using device extensions
+LOG:  GetDeviceExtensionsAndLayers            :414  * VK_KHR_swapchain
+LOG:  GetDeviceExtensionsAndLayers            :414  * VK_KHR_sampler_mirror_clamp_to_edge
+LOG:  GetDeviceExtensionsAndLayers            :414  * VK_KHR_maintenance1
+LOG:  GetDeviceExtensionsAndLayers            :420  Using device layers
+LOG:  GetDeviceExtensionsAndLayers            :422  * VK_LAYER_GOOGLE_threading
+LOG:  GetDeviceExtensionsAndLayers            :422  * VK_LAYER_LUNARG_parameter_validation
+LOG:  GetDeviceExtensionsAndLayers            :422  * VK_LAYER_LUNARG_object_tracker
+LOG:  GetDeviceExtensionsAndLayers            :422  * VK_LAYER_LUNARG_core_validation
+LOG:  GetDeviceExtensionsAndLayers            :422  * VK_LAYER_GOOGLE_unique_objects
+LOG:  GetDeviceExtensionsAndLayers            :422  * VK_LAYER_LUNARG_core_validation
+LOG:  CreateDevice                            :63   Found 3 Queue Families
+LOG:  CreateDevice                            :134  Initializing Queue Family 0: 16 queues Gfx Compute Xfer Sparse
+LOG:  CreateDevice                            :123  Skipping unnecessary Queue Family 1: 2 queues Xfer Sparse
+LOG:  CreateDevice                            :123  Skipping unnecessary Queue Family 2: 8 queues Compute Xfer Sparse
+LOG:  SetupAndPrintMemInfo                    :279  3 Device Memory Heaps; Max memory allocations -1
+LOG:  SetupAndPrintMemInfo                    :290  0: Flags 0x1 Size 11811160064 (11264.00 MB) GPU
+LOG:  SetupAndPrintMemInfo                    :290  1: Flags 0x0 Size 25213974528 (24045.92 MB) 
+LOG:  SetupAndPrintMemInfo                    :290  2: Flags 0x1 Size 257949696 (246.00 MB) GPU
+LOG:  SetupAndPrintMemInfo                    :295  11 Device Memory Types (Notunified)
+LOG:  SetupAndPrintMemInfo                    :325  0: Flags 0x0 Heap 1 
+LOG:  SetupAndPrintMemInfo                    :325  1: Flags 0x0 Heap 1 
+LOG:  SetupAndPrintMemInfo                    :325  2: Flags 0x0 Heap 1 
+LOG:  SetupAndPrintMemInfo                    :325  3: Flags 0x0 Heap 1 
+LOG:  SetupAndPrintMemInfo                    :325  4: Flags 0x0 Heap 1 
+LOG:  SetupAndPrintMemInfo                    :325  5: Flags 0x0 Heap 1 
+LOG:  SetupAndPrintMemInfo                    :325  6: Flags 0x0 Heap 1 
+LOG:  SetupAndPrintMemInfo                    :325  7: Flags 0x1 Heap 0  Local
+LOG:  SetupAndPrintMemInfo                    :325  8: Flags 0x6 Heap 1  HostVisible HostCoherent
+LOG:  SetupAndPrintMemInfo                    :325  9: Flags 0xe Heap 1  HostVisible HostCoherent HostCached
+LOG:  SetupAndPrintMemInfo                    :325  10: Flags 0x7 Heap 2  Local HostVisible HostCoherent
+LOG:  operator()                              :323  Queue Family 0: Supports Present
+LOG:  VulkanSwapChain                         :115  Found 3 present mode.
+LOG:  VulkanSwapChain                         :130  - VK_PRESENT_MODE_FIFO_KHR (2)
+LOG:  VulkanSwapChain                         :133  - VkPresentModeKHR (3)
+LOG:  VulkanSwapChain                         :126  - VK_PRESENT_MODE_IMMEDIATE_KHR (0)
+LOG:  VulkanSwapChain                         :154  Selected VkPresentModeKHR mode 2
+LOG:  VulkanSwapChain                         :162  Surface minSize:1600x900 maxSize:1600x900
+LOG:  VulkanSwapChain                         :235  SwapChain: Backbuffer:3 Format:44 ColorSpace:0 Size:1600x900 Present:2
+LOG:  ParseAppPath                            :105  AssetsPath:/media/liusheng/Apps/progworks/github/Vulkan/BobLChen/VulkanDemos/code/20200716/VulkanDemos-master/qt-build-debug/examples/
+formatNumByDigit() : num == 0, outputStr == 00000
+utils::write_png() : Create a mappable image
+LOG:  VulkanDebugCallBack                     :40   ERROR: [Validation] Code 0 :  [ VUID-VkImageMemoryBarrier-oldLayout-01212 ] Object: 0x4 (Type = 10) | vkCmdPipelineBarrier(): Image barrier 0x0x7fff9c1cdaf0 newLayout=VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL is not compatible with image 0x4 usage flags 0x16. The Vulkan spec states: If either oldLayout or newLayout is VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL then image must have been created with VK_IMAGE_USAGE_TRANSFER_SRC_BIT set (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkImageMemoryBarrier-oldLayout-01212)
+LOG:  VulkanDebugCallBack                     :40   ERROR: [Validation] Code 0 :  [ VUID-vkCmdCopyImage-srcImage-00126 ] Object: 0x4 (Type = 10) | Invalid usage flag for Image 0x4 used by vkCmdCopyImage(). In this case, Image should have VK_IMAGE_USAGE_TRANSFER_SRC_BIT set during creation. The Vulkan spec states: srcImage must have been created with VK_IMAGE_USAGE_TRANSFER_SRC_BIT usage flag (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-vkCmdCopyImage-srcImage-00126)
+formatNumByDigit() : num == 1, outputStr == 00001
+utils::write_png() : Create a mappable image
+LOG:  VulkanDebugCallBack                     :40   ERROR: [Validation] Code 0 :  [ VUID-vkBeginCommandBuffer-commandBuffer-00049 ] Object: 0x5590939c7538 (Type = 6) | vkBeginCommandBuffer(): Cannot call Begin on command buffer (0x5590939c7538) in the RECORDING state. Must first call vkEndCommandBuffer(). The Vulkan spec states: commandBuffer must not be in the recording or pending state. (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-vkBeginCommandBuffer-commandBuffer-00049)
+LOG:  VulkanDebugCallBack                     :40   ERROR: [Validation] Code 0 :  [ VUID-VkImageMemoryBarrier-oldLayout-01212 ] Object: 0x5 (Type = 10) | vkCmdPipelineBarrier(): Image barrier 0x0x7fff9c1cdaf0 newLayout=VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL is not compatible with image 0x5 usage flags 0x16. The Vulkan spec states: If either oldLayout or newLayout is VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL then image must have been created with VK_IMAGE_USAGE_TRANSFER_SRC_BIT set (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-VkImageMemoryBarrier-oldLayout-01212)
+LOG:  VulkanDebugCallBack                     :40   ERROR: [Validation] Code 0 :  [ VUID-vkCmdCopyImage-srcImage-00126 ] Object: 0x5 (Type = 10) | Invalid usage flag for Image 0x5 used by vkCmdCopyImage(). In this case, Image should have VK_IMAGE_USAGE_TRANSFER_SRC_BIT set during creation. The Vulkan spec states: srcImage must have been created with VK_IMAGE_USAGE_TRANSFER_SRC_BIT usage flag (https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#VUID-vkCmdCopyImage-srcImage-00126)
+
+
