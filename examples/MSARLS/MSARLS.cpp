@@ -9,10 +9,15 @@
 
 #include <vector>
 
-//#include <utils/util_init.hpp>
-//#include <utils/util.hpp>
-#include "util_init.hpp"
-#include <formatUtils.h>
+#include <utils/util_init.hpp>
+#include <utils/util.hpp>
+
+#include <utils/formatUtils.h>
+
+#include <stb_image/stb_image.h>
+
+#include <tinyobj/tiny_obj_loader_me.h>
+
 
 //sample_info renderInfo = {};
 

@@ -62,7 +62,9 @@ set(ALL_LIBS
 	spirv-cross-util
 	spirv-cross-core
 	Monkey
-	utils
+        utils
+        tinyobj
+        stbimage
 	png
 )
 
@@ -77,6 +79,8 @@ include_directories(
 	Engine/Monkey/
 	3rdparty/
 	3rdparty/utils/
+        3rdparty/stb_image/
+        3rdparty/tinyobj/
 	external/imgui/
 	external/SPIRV-Cross/
 	external/assimp/include/
@@ -86,8 +90,10 @@ add_subdirectory(external/imgui)
 add_subdirectory(external/SPIRV-Cross)
 add_subdirectory(external/assimp)
 add_subdirectory(Engine)
-#add_subdirectory(3rdparty/utils)
 add_subdirectory(3rdparty)
+#add_subdirectory(3rdparty/utils)
+#add_subdirectory(3rdparty/stb_image)
+#add_subdirectory(3rdparty/tinyobj)
 add_subdirectory(examples)
 
 #starget_link_libraries(/media/liusheng/Programfiles/Programs/libs/libpng/1.6.37/lib/libpng.a)

@@ -4,7 +4,7 @@
 #include "VulkanDevice.h"
 #include "VulkanMemory.h"
 #include <algorithm>
-#include "GlobalManager.h"
+#include <utils/GlobalManager.h>
 
 enum
 {
