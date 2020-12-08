@@ -62,9 +62,9 @@ set(ALL_LIBS
 	spirv-cross-util
 	spirv-cross-core
 	Monkey
-        utils
-        tinyobj
-        stbimage
+#        utils
+#        tinyobj
+#        stbimage
 	png
 )
 

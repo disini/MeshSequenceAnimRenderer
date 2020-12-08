@@ -74,9 +74,19 @@ endif ()
 
 
 SETUP_SAMPLE_START(MSARLS)
+        SET(HEADER_FILES
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/formatUtils.h
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/util.hpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/util_init.hpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/GlobalManager.h
+                )
 	SET(SOURCE_FILES
 		${MainLaunch}
-		${CMAKE_CURRENT_SOURCE_DIR}/MSARLS/MSARLS.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/MSARLS/MSARLS.cpp                
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/formatUtils.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/util.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/util_init.cpp
+                ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/utils/GlobalManager.cpp
 	)
 	file(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/assets/shaders/MSARLS/*.*")
 	foreach(file ${files})
