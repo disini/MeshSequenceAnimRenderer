@@ -7,19 +7,240 @@
 #include "Math/Vector4.h"
 #include "Math/Matrix4x4.h"
 
-#include <vector>
+//#include "Demo/DemoBase.h"
 
+//#include <vulkan/vulkan.h>
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES// force GLM to use a version of vec2 and mat4 that has the alignment requirements already specified for us.
+
+
+//#define VK_USE_PLATFORM_XCB
+//#define VK_USE_PLATFORM_XCB_KHR
 #include <utils/util_init.hpp>
 #include <utils/util.hpp>
+//#include <util_init.hpp>
+//#include <glm/detail/setup.hpp>
+#include <optional>
+//#include "G:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\include\optional"
 
-#include <utils/formatUtils.h>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp> // perspective, translate, rotate
 
-#include <stb_image/stb_image.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/hash.hpp>
+#include <endian.h>
 
+//#define STB_IMAGE_IMPLEMENTATION
+//#include <stb_image/stb_image.h>
+
+#define TINYOBJLOADER_IMPLEMENTATION
+//#include <tiny_obj_loader.h>
 #include <tinyobj/tiny_obj_loader_me.h>
 
 
+//#include <glm/vec4.hpp>
+//#include <glm/mat4x4.hpp>
+
+
+#include <fstream>
+#include <stdexcept>
+#include <algorithm>
+//#include <functional>
+#include <chrono>
+
+#include <vector>
+#include <cstring>
+#include <cstdlib>
+#include <array>
+#include <cstdint>
+#include <optional>
+//#include "G:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Tools\MSVC\14.28.29333\include\optional"
+#include <set>
+#include <unordered_map>
+//#include <unique_ptr>
+#include <memory>
+
+
+#include <stdio.h>
+
+
+#include <QtCore/qfileinfo.h>
+#include <QtCore/QVector>
+#include <QtCore/QCollator>
+#include <QtCore/QTimer>
+#include <QtCore/QDir>
+//#include <QWidget>
+
+#include <iostream>
+#include <stddef.h>
+#include <stdlib.h>
+#include <zlib.h>
+
+
+
+
+#include <chrono>
+
+// #define NDEBUG // not debug
+
+using namespace std;
+using namespace chrono;
+using namespace tinyobj;
+
+const int WIDTH = 1600;
+const int HEIGHT = 900;
+
+//const std::string MODEL_PATH = "models/viking_room.obj";
+//const std::string TEXTURE_PATH = "textures/viking_room.png";
+
+#ifdef __linux__
+const std::string MODEL_PATH_PREFIX = "/media/liusheng/Apps/projects/3DMM/body/mesh_sorted/";
+#elif _WIN32
+//const std::string MODEL_PATH_PREFIX = "D:/projects/3DMM/obj/";
+//const std::string MODEL_PATH_PREFIX = "D:/projects/3DMM/body/mesh/";
+const std::string MODEL_PATH_PREFIX = "D:/projects/3DMM/body/mesh_sorted/";
+#else
+const std::string MODEL_PATH_PREFIX = "";
+#endif
+
+#ifdef __linux__
+const std::string FIRST_MODEL_PATH = "/media/liusheng/Apps/projects/3DMM/body/wangzhi/nvrentou0001.obj";
+#elif _WIN32
+const std::string FIRST_MODEL_PATH = "D:/projects/3DMM/body/wangzhi/nvrentou0001.obj";
+#else
+const std::string FIRST_MODEL_PATH = "";
+#endif
+
+const std::string MODEL_PATH_POSTFIX = "_mesh.obj";
+
+#ifdef __linux__
+const std::string TEXTURE_PATH = "/media/liusheng/Apps/projects/3DMM/body/wangzhi/difuse.jpg";
+#elif _WIN32
+//const std::string TEXTURE_PATH = "K:/Projects/moviebook/creativity/LSVulkanKit/Obj_Sequence_Renderer/ObjS_Renderer/App01/textures/viking_room.png";
+const std::string TEXTURE_PATH = "D:/projects/3DMM/body/wangzhi/difuse.jpg";
+#else
+const std::string TEXTURE_PATH = "";
+#endif
+
+
+const int MAX_FRAMES_IN_FLIGHT = 2;
+
+const int MAX_OBJS_PRELOAD = 100;
+
+const std::vector<const char*> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+};
+
+const std::vector<const char*> deviceExtensions = {
+    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+};
+
+int curLodingModelIndex = 0;
+
+int curLodedModelIndex = 0;
+
+int totalModelsNumber = 0;
 //sample_info renderInfo = {};
+
+
+char curOutputImgNameStr[20] = "00000000000";
+
+
+
+struct QueueFamilyIndices {
+    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
+
+    bool isComplete() {
+        return graphicsFamily.has_value() && presentFamily.has_value();
+    }
+};
+
+
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR> presentModes;
+};
+
+struct Vertex {
+    glm::vec3 pos;
+    glm::vec3 color;
+    glm::vec2 texCoord;
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription = {};
+
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(Vertex);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    };
+
+
+    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+        std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions = {};
+
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+        attributeDescriptions[2].binding = 0;
+        attributeDescriptions[2].location = 2;
+        attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
+        return attributeDescriptions;
+    }
+
+    bool operator == (const Vertex & other) const  {
+        return pos == other.pos && color == other.color && texCoord == other.texCoord;
+    }
+
+};
+
+namespace std {
+    template<> struct hash<Vertex> {
+        size_t operator()(Vertex const& vertex) const {
+            return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1 )) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
+        }
+    };
+}
+
+struct UniformBufferObject {
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
+};
+
+struct SingleMeshData {
+    std::string fileName;
+    std::string fileIndex;
+//        tinyobj::attrib_t attrib;
+//        std::vector<tinyobj::shape_t> shapes;
+//        std::vector<tinyobj::material_t> materials;
+//        std::string warn;
+//        std::string err;
+    std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+//        uniqueVertices.
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
+
+};
+
+
 
 class TextureModule : public DemoBase
 {
@@ -52,6 +273,8 @@ public:
         CreateDescriptorSet();
 		CreatePipelines();
 		SetupCommandBuffers();
+        if(!getFilesList())
+            return false;
         if(!initRenderInfo())
             return false;
 		m_Ready = true;
@@ -74,7 +297,10 @@ public:
 
 	virtual void Loop(float time, float delta) override
 	{
-		if (!m_Ready) {
+        if(!loadRestModels())
+            return;
+
+        if (!m_Ready) {
 			return;
 		}
 		Draw(time, delta);
@@ -108,13 +334,212 @@ private:
 //        FILE *pFileCon = NULL;
 //        pFileCon = freopen("CONOUT$", "w", stdout);
 //
-////        COORD coordInfo;
-////        coordInfo.X = 130;
-////        coordInfo.Y = 9000;
+//        COORD coordInfo;
+//        coordInfo.X = 130;
+//        coordInfo.Y = 9000;
 //
 //        SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coordInfo);
 //        SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),ENABLE_QUICK_EDIT_MODE| ENABLE_EXTENDED_FLAGS);
 //    }
+
+
+
+    bool loadRestModels(){
+
+        auto start = system_clock::now();
+        curLoadingModelIndex = loadedModelCount;
+
+
+        if(curLoadingModelIndex >= objFileCount)
+        {
+//            usleep(33000);//force changing fps!
+            return true;
+//            curLoadingModelIndex %= objFileCount;
+        }
+
+        cout << "loadModels() : loading model number :  " << curLoadingModelIndex << endl;// uniqueVertices.size == 3566
+//            auto objMeshData = std::make_unique<SingleMeshData>();
+        SingleMeshData* objMeshData = new SingleMeshData();
+        std::string path = (std::string)((const char*)(objFileList[curLoadingModelIndex].absoluteFilePath()).toLocal8Bit());
+        cout << "loadRestModels() : currrent model path is " << path << endl;
+        if(!loadModel1(path, objMeshData, curLoadingModelIndex))
+        {
+            throw std::runtime_error("failed to loadwenjianming  model number " + to_string(curLoadingModelIndex));
+        }
+
+        meshSequenceData[std::to_string(curLoadingModelIndex)] = objMeshData;
+
+//        if(curLoadingModelIndex > 2)
+//        {
+//            clearOldFrameData();
+            if(objMeshData != nullptr)
+            {
+                delete objMeshData;
+                objMeshData = nullptr;
+            }
+//        }
+
+        loadedModelCount++;
+
+        auto end = system_clock::now();
+        auto duration = duration_cast<microseconds>(end - start);
+        cout << "total loding time cost : " << double(duration.count()) *microseconds::period::num / microseconds::period::den << "seconds" << endl;
+        return true;
+    }
+
+    bool getFilesList() {
+        path = QString::fromLocal8Bit(MODEL_PATH_PREFIX.c_str());
+        objFileList.clear();
+        QDir dir(path);
+        if(!dir.exists())
+            return false;
+
+        QStringList filter;
+        filter<<"*.obj";
+        dir.setNameFilters(filter);
+        dir.setFilter(QDir::Files | QDir::NoSymLinks);
+        dir.setSorting(QDir::NoSort);  // will sort manually with std::sort
+//        dir.setSorting(QDir::Name | QDir::Reversed);
+        objFileList = dir.entryInfoList();// get file info list;
+        objStringList = dir.entryList();
+
+        QCollator collator;
+        collator.setNumericMode(true);
+
+        std::sort(objStringList.begin(),
+                  objStringList.end(),
+                  [& collator](const QString &file1, const QString &file2)
+                  {
+                      return collator.compare(file1, file2) < 0;
+                  });
+
+//        objFileCount = objFileList.count();
+        objFileCount = objStringList.count();
+
+        return true;
+    }
+
+    bool loadModel1(const std::string path, SingleMeshData* data, uint32_t modelIndex) {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+        bool isFirstModel = true;
+        int curCount = 0;
+        if(modelIndex > 0)
+        {
+            isFirstModel = false;
+        }
+
+
+        cout << "loadModel1() : currrent model path is " << path << endl;
+//        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+//        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str())) {
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), NULL, true, true, !isFirstModel)) {
+
+            throw std::runtime_error(warn + err);
+            return false;
+        }
+
+//        std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+
+        if(modelIndex == 0 && shapes.size() > 0)
+        {
+            initializedShapes = shapes;
+            initializedAttrib = attrib;
+        }
+
+        std::vector<tinyobj::shape_t> tempShapes = initializedShapes;
+
+//        for (const auto& shape : shapes) {
+        for (const auto& shape : tempShapes) {
+            if(isFirstModel)
+                initializedFaces = shape.mesh.indices;
+
+            for (const auto& index : shape.mesh.indices) {
+                Vertex vertex = {};
+
+                if(index.vertex_index >= 0 && attrib.vertices.size() > 0)
+                {
+                    vertex.pos = {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
+                    };
+                }
+
+
+                if(index.texcoord_index >= 0 && attrib.texcoords.size() > 0)
+                {
+                    vertex.texCoord = {
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        //attrib.texcoords[2 * index.texcoord_index + 1]
+                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                    };
+                }
+                else
+                {
+                    if(!isFirstModel)
+                    {
+                        vertex.texCoord = {
+                            initializedAttrib.texcoords[2 * initializedFaces[curCount].texcoord_index + 0],
+                            1.0f - initializedAttrib.texcoords[2 * initializedFaces[curCount].texcoord_index + 1]
+                        };
+                    }
+                }
+
+                if(index.vertex_index >= 0 && attrib.colors.size() > 0)
+                {
+//                vertex.color = { 1.0f, 1.0f, 1.0f };
+                    vertex.color = { attrib.colors[3 * index.vertex_index + 0], attrib.colors[3 * index.vertex_index + 1], attrib.colors[3 * index.vertex_index + 2] };
+
+                }
+
+//                if (data->uniqueVertices.count(vertex) == 0) {// if not contained yet
+//                    data->uniqueVertices[vertex] = static_cast<uint32_t>(data->vertices.size());
+//                    data->vertices.push_back(vertex);
+//                }
+
+                data->vertices.push_back(vertex);
+                //indices.push_back(indices.size());
+                if(isFirstModel)
+                {
+//                    data->indices.push_back(data->uniqueVertices[vertex]);
+                    data->indices.push_back(data->indices.size());
+                }
+
+                curCount++;
+            }
+
+
+        }
+
+//        indices = data->indices;
+
+        if(isFirstModel)
+        {
+//            vertices = data->vertices;
+            initializedVertices = data->vertices;
+            initializedIndices = data->indices;
+        }
+        else
+        {
+            data->indices = initializedIndices;
+        }
+
+        cout << "vertices.size == " << data->vertices.size() << endl;// vertices.size == 11484(before); 3566(after)
+        cout << "indices.size == " << data->indices.size() << endl;// indices.size ==11484
+        cout << "uniqueVertices.size == " << data->uniqueVertices.size() << endl;// uniqueVertices.size == 3566
+        cout << "model " << modelIndex << " loaded successfully!" << "!\n" << endl;// uniqueVertices.size == 3566
+
+        if(modelIndex == MAX_OBJS_PRELOAD - 1)
+        {
+            cout << "index == " << (MAX_OBJS_PRELOAD - 1) << "! The last model data was loaded yet!" << "!\n" << endl;
+        }
+
+
+        return true;
+    }
 
 	void Draw(float time, float delta)
 	{
@@ -201,6 +626,12 @@ private:
         m_TexNormal        = vk_demo::DVKTexture::Create2D("assets/models/wangzhi/head_normal.jpg", m_VulkanDevice, cmdBuffer);
 		m_TexCurvature     = vk_demo::DVKTexture::Create2D("assets/textures/curvatureLUT.png", m_VulkanDevice, cmdBuffer);
 		m_TexPreIntegrated = vk_demo::DVKTexture::Create2D("assets/textures/preIntegratedLUT.png", m_VulkanDevice, cmdBuffer);
+
+        SingleMeshData* objMeshData = new SingleMeshData();
+
+        meshSequenceData[std::to_string(curLoadingModelIndex)] = objMeshData;
+
+        loadedModelCount++;
 
 		delete cmdBuffer;
 	}
@@ -506,6 +937,119 @@ private:
 	VkDescriptorSet 				m_DescriptorSet = VK_NULL_HANDLE;
     
 	ImageGUIContext*				m_GUI = nullptr;
+
+    GLFWwindow* window;
+    VkInstance instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
+    VkSurfaceKHR surface;
+
+    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    std::vector<VkPhysicalDevice> physicalDevices;
+    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+    VkDevice curVkDevice;
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
+
+    VkSwapchainKHR swapChain;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat;
+    VkExtent2D swapChainExtent;
+    std::vector<VkImageView> swapChainImageViews;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+
+    uint32_t availableValidationLayerFoundCount = 0;
+
+    VkRenderPass renderPass;
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+
+    VkCommandPool commandPool;
+
+    VkImage colorImage;
+    VkDeviceMemory colorImageMemory;
+    VkImageView colorImageView;
+
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    uint32_t mipLevels = 0;
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+    VkSampler textureSampler;
+
+    std::vector<Vertex> initializedVertices;
+    std::vector<uint32_t> initializedIndices;
+    std::vector<index_t> initializedFaces;
+    std::vector<tinyobj::shape_t> initializedShapes;
+    tinyobj::attrib_t initializedAttrib;
+
+    VkBuffer vertexBuffer;
+    VkDeviceMemory vertexBufferMemory;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
+    VkDeviceSize vertexBufferSize;
+
+//    VkBuffer stagingBuffer;
+//    VkDeviceMemory stagingBufferMemory;
+
+    std::vector<Vertex> firstVertices;
+    std::vector<Vertex> curVertices;
+
+
+
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
+
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
+
+    std::vector<VkCommandBuffer> commandBuffers;
+
+
+    /*VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;*/
+
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+    std::vector<VkFence> imagesInFlight;
+    size_t currentFrame = 0;
+    int lastFrameNum = 0;
+    int curFrameNum = 0;
+     uint32_t imageIndex = 0;
+    bool framebufferResized = false;
+
+    //----------------------------------------------------------20201016-------------------------------------//
+
+//    std::unordered_map<std::string, std::unique_ptr<SingleMeshData>> meshSequenceData;
+    std::unordered_map<std::string, const SingleMeshData*> meshSequenceData;
+
+    QString objFileName;
+    QStringList objStringList;
+    QFileInfoList objFileList;
+    QString path;
+    QString presetLabelsListStr;
+    QStringList presetLabelsListQ;
+    QVector<QString> presetLabelsList;
+    QList<QFileInfo> *objFileInfo;
+//
+    uint32_t objFileCount = 0;
+//        QPixmap pix;
+//        About about;
+//    int imageAngle;
+//    int index;
+    uint32_t loadedModelCount = 0;
+    uint32_t curLoadingModelIndex = 0;
+
+//    sample_info renderInfo = {};
+    VkSwapchainCreateInfoKHR swapChainCreateInfo = {};
+
+ std::vector<VkImage> mMappableImages;
+ std::vector<VkDeviceMemory> mMappableMemories;
+
 };
 
 std::shared_ptr<AppModuleBase> CreateAppMode(const std::vector<std::string>& cmdLine)

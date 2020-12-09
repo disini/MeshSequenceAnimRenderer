@@ -38,7 +38,13 @@ endif()
 		${ALL_LIBS}
 #                ${CMAKE_SOURCE_DIR}/qt-build-debug/external/assimp/code
 #                ${CMAKE_SOURCE_DIR}/qt-build-debug/external/imgui
+#                /media/liusheng/Programfiles/ubuntu/18.04.5/opt/Qt/5.15.1/gcc_64/lib/libQt5Core.so
+#                /media/liusheng/Programfiles/ubuntu/18.04.5/opt/Qt/5.15.1/gcc_64/lib/libicui18n.so.56
 	)
+
+        message(status "${ALL_LIBS}")
+        message(status "${EXTRA_LINKED_LIBRARIES}")
+
 	TARGET_LINK_LIBRARIES(${EXE_NAME} ${EXTRA_LINKED_LIBRARIES})
 ENDMACRO(SETUP_SAMPLE_END)
 

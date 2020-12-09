@@ -14,11 +14,11 @@ set(UTILS_SRCS
         utils/debugUtils.cpp
         utils/GlobalManager.cpp)
 
-set(STBIMAGE_HDRS
-    stb_image/stb_image.h)
+#set(STBIMAGE_HDRS
+#    stb_image/stb_image.h)
 
-set(STBIMAGE_SRCS
-        stb_image/stb_image.cpp)
+#set(STBIMAGE_SRCS
+#        stb_image/stb_image.cpp)
 
 set(TINYOBJ_HDRS
         tinyobj/tiny_obj_loader_me.h)
@@ -31,10 +31,10 @@ add_library(utils STATIC
         ${UTILS_SRCS}
         )
 
-add_library(stbimage STATIC
-        ${STBIMAGE_HDRS}
-        ${STBIMAGE_SRCS}
-        )
+#add_library(stbimage STATIC
+#        ${STBIMAGE_HDRS}
+#        ${STBIMAGE_SRCS}
+#        )
 
 add_library(tinyobj STATIC
         ${TINYOBJ_HDRS}
@@ -49,9 +49,9 @@ include_directories(
 )
 
 source_group(src\\ FILES ${UTILS_HDRS} ${UTILS_SRCS})
-source_group(src\\ FILES ${STBIMAGE_HDRS} ${STBIMAGE_SRCS})
+#source_group(src\\ FILES ${STBIMAGE_HDRS} ${STBIMAGE_SRCS})
 source_group(src\\ FILES ${TINYOBJ_HDRS} ${TINYOBJ_SRCS})
 
 set_target_properties(utils PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(tinyobj PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(stbimage PROPERTIES LINKER_LANGUAGE CXX)
+#set_target_properties(stbimage PROPERTIES LINKER_LANGUAGE CXX)
