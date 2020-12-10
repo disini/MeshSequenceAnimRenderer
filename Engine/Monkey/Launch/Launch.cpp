@@ -115,7 +115,7 @@ int32 GuardedMain(const std::vector<std::string>& cmdLine)
 		return errorLevel;
 	}
 
-	while (!g_GameEngine->IsRequestingExit()) {
+	while ((!g_GameEngine->IsRequestingExit()) && (!g_AppModule->GetIsNeedExit())) {
 		EngineLoop();
 	}
 

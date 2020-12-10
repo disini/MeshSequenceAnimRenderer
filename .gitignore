@@ -28,5 +28,6 @@ output/
 output/*
 output/png/
 output/png/*
+valgrind/
 
 

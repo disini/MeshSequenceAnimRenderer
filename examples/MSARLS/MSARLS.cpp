@@ -355,10 +355,12 @@ private:
 
         curLoadingModelIndex = loadedModelCount;
 
-        if(curLoadingModelIndex >= objFileCount)
+//        if(curLoadingModelIndex >= objFileCount)
+        if(curLoadingModelIndex >= 1000)
         {
 //            usleep(33000);//force changing fps!
-            return true;
+            m_NeedExit = true;
+            return false;
 //            curLoadingModelIndex %= objFileCount;
         }
         cout << "loadModels() : loading model number :  " << curLoadingModelIndex << endl;// uniqueVertices.size == 3566
@@ -393,20 +395,32 @@ private:
 
         meshSequenceData1[std::to_string(curLoadingModelIndex)] = objMeshData;
 
-        //        if(curLoadingModelIndex > 2)
-//        {
-//            clearOldFrameData();
+        if(curLoadingModelIndex > 2)
+        {
+            clearOldFrameData();
 //        if(objMeshData != nullptr)
 //        {
 //            delete objMeshData;
 //            objMeshData = nullptr;
 //        }
-//        }
+        }
 
         loadedModelCount++;
 
-//        delete cmdBuffer;
+        delete model;
+        model = nullptr;
+        delete cmdBuffer;
+        cmdBuffer  = nullptr;
         return true;
+    }
+
+    void clearOldFrameData()
+    {
+        if(meshSequenceData1[std::to_string(curLoadingModelIndex-2)] != nullptr)
+        {
+            delete meshSequenceData1[std::to_string(curLoadingModelIndex-2)];
+            meshSequenceData1[std::to_string(curLoadingModelIndex-2)] = nullptr;
+        }
     }
 
 
@@ -663,7 +677,7 @@ private:
         gIsFirstModel = true;
 
         vk_demo::DVKCommandBuffer* cmdBuffer = vk_demo::DVKCommandBuffer::Create(m_VulkanDevice, m_CommandPool);
-		m_CmdBuffer = cmdBuffer;
+//		m_CmdBuffer = cmdBuffer;
 
 		m_Model = vk_demo::DVKModel::LoadFromFile(
 //			"assets/models/head.obj",

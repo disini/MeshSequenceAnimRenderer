@@ -83,6 +83,11 @@ public:
 
 	virtual void Exist() = 0;
 
+    bool GetIsNeedExit()
+    {
+        return m_NeedExit;
+    }
+
 protected:
 
 	virtual void CreateFrameBuffers()
@@ -278,6 +283,8 @@ protected:
 		}
 	}
 
+
+
 public:
 	std::vector<const char*>	deviceExtensions;
 	std::vector<const char*>	instanceExtensions;
@@ -299,4 +306,6 @@ protected:
 	VkSampleCountFlagBits		m_SampleCount;
 
     PixelFormat					m_DepthFormat;
+
+    bool                        m_NeedExit;
 };

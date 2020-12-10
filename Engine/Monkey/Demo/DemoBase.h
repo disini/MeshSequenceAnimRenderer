@@ -105,7 +105,7 @@ public:
 		, m_WaitStageMask(VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT)
 		, m_SwapChain(VK_NULL_HANDLE)
 	{
-
+        m_NeedExit = false;
 	}
 
 	virtual ~DemoBase()
