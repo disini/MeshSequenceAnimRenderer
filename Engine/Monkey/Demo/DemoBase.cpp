@@ -12,10 +12,13 @@ void DemoBase::Setup()
 
 	m_SwapChain     = vulkanRHI->GetSwapChain();
 
-	m_Device		= vulkanDevice->GetInstanceHandle();
+    curVkDevice = m_Device		= vulkanDevice->GetInstanceHandle();
+    physicalDevice = m_PhysicalDevice = vulkanDevice->GetPhysicalHandle();
+//    renderInfo.gpus = physicalDevices = vulkanRHI->GetPhysicalDevices();
+    physicalDevices = vulkanRHI->GetPhysicalDevices();
 	m_VulkanDevice	= vulkanDevice;
-	m_GfxQueue		= vulkanDevice->GetGraphicsQueue()->GetHandle();
-	m_PresentQueue	= vulkanDevice->GetPresentQueue()->GetHandle();
+	graphicsQueue = m_GfxQueue		= vulkanDevice->GetGraphicsQueue()->GetHandle();
+	presentQueue = m_PresentQueue	= vulkanDevice->GetPresentQueue()->GetHandle();
     
 	m_FrameWidth	= vulkanRHI->GetSwapChain()->GetWidth();
 	m_FrameHeight	= vulkanRHI->GetSwapChain()->GetHeight();
@@ -131,6 +134,8 @@ void DemoBase::CreateCommandBuffers()
 	cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	VERIFYVULKANRESULT(vkCreateCommandPool(device, &cmdPoolInfo, VULKAN_CPU_ALLOCATOR, &m_CommandPool));
 
+    commandPool = m_CommandPool;
+
 	VkCommandPoolCreateInfo computePoolInfo;
 	ZeroVulkanStruct(computePoolInfo, VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO);
 	computePoolInfo.queueFamilyIndex = GetVulkanRHI()->GetDevice()->GetComputeQueue()->GetFamilyIndex();
@@ -180,6 +185,8 @@ bool DemoBase::initRenderInfo()
     renderInfo.memory_properties = gMemProperties;
 
     renderInfo.device = m_Device;
+    renderInfo.physicalDevice = m_PhysicalDevice;
+    renderInfo.gpus = physicalDevices;
     renderInfo.width = m_Width;
     renderInfo.height = m_Height;
 //    renderInfo.format = m_SwapChain;

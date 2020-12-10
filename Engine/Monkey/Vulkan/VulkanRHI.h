@@ -45,6 +45,16 @@ public:
 		return m_Device;
 	}
 
+	inline VkPhysicalDevice GetPhysicalDevice() const
+    {
+	    return m_PhysicalDevice;
+    }
+
+    inline std::vector<VkPhysicalDevice> GetPhysicalDevices() const
+    {
+	    return m_PhysicalDevices;
+    }
+
 	inline std::shared_ptr<VulkanSwapChain> GetSwapChain() const
 	{
 		return m_SwapChain;
@@ -117,7 +127,8 @@ protected:
 	std::vector<const char*>			m_AppDeviceExtensions;
 	std::vector<const char*>			m_AppInstanceExtensions;
 	VkPhysicalDeviceFeatures2*			m_PhysicalDeviceFeatures2 = nullptr;
-
+    std::vector<VkPhysicalDevice>       m_PhysicalDevices;
+    VkPhysicalDevice                    m_PhysicalDevice;
     std::shared_ptr<VulkanDevice>		m_Device;
 
     std::shared_ptr<VulkanSwapChain>	m_SwapChain;

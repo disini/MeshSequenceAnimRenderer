@@ -24,9 +24,16 @@ std::string FileManager::GetFilePath(const std::string& filepath)
 #endif
 }
 
-bool FileManager::ReadFile(const std::string& filepath, uint8*& dataPtr, uint32& dataSize)
+bool FileManager::ReadFile(const std::string& filepath, uint8*& dataPtr, uint32& dataSize, bool isRelativePath)
 {
-	std::string finalPath = FileManager::GetFilePath(filepath);
+    std::string finalPath = "";
+    if(isRelativePath) {
+        finalPath = FileManager::GetFilePath(filepath);
+    }
+    else
+    {
+        finalPath = filepath;
+    }
 
 #if PLATFORM_ANDROID
 

@@ -200,6 +200,8 @@ void VulkanRHI::SelectAndInitDevice()
 
     std::vector<VkPhysicalDevice> physicalDevices(gpuCount);
     vkEnumeratePhysicalDevices(m_Instance, &gpuCount, physicalDevices.data());
+
+    m_PhysicalDevices = physicalDevices;
 	
 	struct DeviceInfo
 	{

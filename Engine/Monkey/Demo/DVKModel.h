@@ -20,15 +20,26 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+//#include <GlobalManager.h>
 
 struct aiMesh;
 struct aiScene;
 struct aiNode;
 
+struct SingleMeshData1 {
+    std::string fileName;
+    std::string fileIndex;
+    std::vector<float> vertices;
+    std::vector<uint32_t> indices;
+
+};
+
+
+
 namespace vk_demo
 {
     struct DVKNode;
-    
+
     struct DVKBoundingBox
     {
         Vector3 min;
@@ -397,7 +408,21 @@ namespace vk_demo
 			bones.clear();
         }
 
+        VkBuffer m_VertexBuffer;
+        VkDeviceMemory m_VertexBufferMemory;
+        VkBuffer m_IndexBuffer;
+        VkDeviceMemory m_IndexBufferMemory;
+        VkDeviceSize m_VertexBufferSize;
+        VkDeviceSize m_IndexBufferSize;
+        int32				m_VertexCount;
+        int32				m_TriangleCount;
+
 		void Update(float time, float delta);
+
+        bool updateVertexBuffer();
+
+        bool updateIndexBuffer();
+
 
 		void SetAnimation(int32 index);
 
@@ -409,12 +434,26 @@ namespace vk_demo
 
 		std::vector<VkVertexInputAttributeDescription> GetInputAttributes();
         
-        static DVKModel* LoadFromFile(const std::string& filename, std::shared_ptr<VulkanDevice> vulkanDevice, DVKCommandBuffer* cmdBuffer, const std::vector<VertexAttribute>& attributes);
+        static DVKModel* LoadFromFile(const std::string& filename, std::shared_ptr<VulkanDevice> vulkanDevice, DVKCommandBuffer* cmdBuffer, const std::vector<VertexAttribute>& attributes, bool isRelativePath = true);
         
         static DVKModel* Create(std::shared_ptr<VulkanDevice> vulkanDevice, DVKCommandBuffer* cmdBuffer, const std::vector<float>& vertices, const std::vector<uint16>& indices, const std::vector<VertexAttribute>& attributes);
         
     protected:
-        
+
+
+
+
+//        DVKIndexBuffer*		indexBuffer = nullptr;
+//        DVKVertexBuffer*	vertexBuffer = nullptr;
+//        DVKVertexBuffer*    instanceBuffer = nullptr;
+//
+//        std::vector<float>	vertices;
+//        std::vector<float>  instanceDatas;
+//        std::vector<uint16>	indices;
+//
+//        int32               vertexCount = 0;
+//        int32               triangleNum = 0;
+
         DVKNode* LoadNode(const aiNode* node, const aiScene* scene);
         
 		DVKMesh* LoadMesh(const aiMesh* mesh, const aiScene* scene);
@@ -450,6 +489,24 @@ namespace vk_demo
 		std::vector<DVKAnimation>		animations;
 		int32							animIndex = -1;
 
+//        std::vector<float> initializedVertices;
+//        std::vector<uint32> initializedIndices;
+//
+        std::vector<float> curMeshVertices;
+        std::vector<uint32> curMeshIndices;
+        DVKMesh* curMesh = nullptr;
+//
+//        DVKBoundingBox		initializedBounding;
+//
+//        int32 initializedVerticesDataStride = 0;
+//        std::vector<index_t> initializedFaces;
+//        std::vector<tinyobj::shape_t> initializedShapes;
+//        tinyobj::attrib_t initializedAttrib;
+
+//        std::unordered_map<std::string, const SingleMeshData1*> meshSequenceData1;
+
+
+
 	private:
 
 		DVKCommandBuffer*				cmdBuffer = nullptr;
@@ -457,3 +514,11 @@ namespace vk_demo
     };
     
 };
+
+extern std::vector<float> initializedVertices;
+extern std::vector<uint32> initializedIndices;
+extern vk_demo::DVKMesh* initializedMesh;
+
+extern vk_demo::DVKBoundingBox initializedBounding;
+
+extern int32 initializedVerticesDataStride;

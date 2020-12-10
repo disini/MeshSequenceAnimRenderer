@@ -81,7 +81,7 @@
 #include <stdlib.h>
 #include <zlib.h>
 
-
+#include "utils/GlobalManager.h"
 
 
 #include <chrono>
@@ -132,9 +132,9 @@ const int MAX_FRAMES_IN_FLIGHT = 2;
 
 const int MAX_OBJS_PRELOAD = 100;
 
-const std::vector<const char*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
+//const std::vector<const char*> validationLayers = {
+//    "VK_LAYER_KHRONOS_validation"
+//};
 
 const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
@@ -150,7 +150,11 @@ int totalModelsNumber = 0;
 
 char curOutputImgNameStr[20] = "00000000000";
 
-
+//std::vector<float> initializedVertices;
+//std::vector<uint32> initializedIndices;
+//vk_demo::DVKMesh* initializedMesh;
+//vk_demo::DVKBoundingBox initializedBounding;
+//int32 initializedVerticesDataStride;
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -275,8 +279,11 @@ public:
 		SetupCommandBuffers();
         if(!getFilesList())
             return false;
+//        if(!loadFirstModel())
+//            return false;
         if(!initRenderInfo())
             return false;
+//        curVkDevice = m_Device;
 		m_Ready = true;
 
 		m_NeedSaveImage = true;
@@ -297,7 +304,7 @@ public:
 
 	virtual void Loop(float time, float delta) override
 	{
-        if(!loadRestModels())
+        if(!loadRestModels1())
             return;
 
         if (!m_Ready) {
@@ -342,13 +349,42 @@ private:
 //        SetConsoleMode(GetStdHandle(STD_OUTPUT_HANDLE),ENABLE_QUICK_EDIT_MODE| ENABLE_EXTENDED_FLAGS);
 //    }
 
+//    bool loadFirstModel(){
+//
+//        auto start = system_clock::now();
+//        int i = 0;
+//
+//        cout << "loadModels() : loading model number :  " << i << endl;// uniqueVertices.size == 3566
+////            auto objMeshData = std::make_unique<SingleMeshData>();
+//        SingleMeshData* objMeshData = new SingleMeshData();
+//        std::string path = FIRST_MODEL_PATH;
+//        cout << "loadFirstModel() : currrent model path is " << path << endl;
+//        if(!loadModel1(path, objMeshData, i))
+//        {
+//            throw std::runtime_error("failed to load model number " + to_string(i));
+//        }
+//
+//        meshSequenceData[std::to_string(i)] = objMeshData;
+//
+////        if(objMeshData != nullptr)
+////        {
+////            delete objMeshData;
+////            objMeshData = nullptr;
+////        }
+//
+//        loadedModelCount++;
+//
+//        auto end = system_clock::now();
+//        auto duration = duration_cast<microseconds>(end - start);
+//        cout << "total loding time cost : " << double(duration.count()) *microseconds::period::num / microseconds::period::den << "seconds" << endl;
+//        return true;
+//    }
 
+    bool loadRestModels1() {
 
-    bool loadRestModels(){
+        gIsFirstModel = false;
 
-        auto start = system_clock::now();
         curLoadingModelIndex = loadedModelCount;
-
 
         if(curLoadingModelIndex >= objFileCount)
         {
@@ -356,36 +392,97 @@ private:
             return true;
 //            curLoadingModelIndex %= objFileCount;
         }
-
         cout << "loadModels() : loading model number :  " << curLoadingModelIndex << endl;// uniqueVertices.size == 3566
-//            auto objMeshData = std::make_unique<SingleMeshData>();
-        SingleMeshData* objMeshData = new SingleMeshData();
         std::string path = (std::string)((const char*)(objFileList[curLoadingModelIndex].absoluteFilePath()).toLocal8Bit());
-        cout << "loadRestModels() : currrent model path is " << path << endl;
-        if(!loadModel1(path, objMeshData, curLoadingModelIndex))
+        cout << "loadRestModels1() : currrent model path is " << path << endl;
+//        if(!loadModel1(path, objMeshData, curLoadingModelIndex))
+
+        vk_demo::DVKCommandBuffer* cmdBuffer = vk_demo::DVKCommandBuffer::Create(m_VulkanDevice, m_CommandPool);
+//        m_CmdBuffer = cmdBuffer;
+
+        vk_demo::DVKModel* model = vk_demo::DVKModel::LoadFromFile(
+//			"assets/models/head.obj",
+//                "assets/models/wangzhi/nvrentou0001.obj",
+                path,
+     m_VulkanDevice,
+                cmdBuffer,
+//                m_CmdBuffer,
+                { VertexAttribute::VA_Position, VertexAttribute::VA_UV0, VertexAttribute::VA_Normal, VertexAttribute::VA_Tangent }, false
+        );
+
+        SingleMeshData1* objMeshData = new SingleMeshData1();
+        objMeshData->vertices = model->curMeshVertices;
+//        objMeshData->indices = model->curMeshIndices;
+        if (gIsFirstModel) {
+            objMeshData->indices = model->curMeshIndices;
+        }
+        else
         {
-            throw std::runtime_error("failed to loadwenjianming  model number " + to_string(curLoadingModelIndex));
+//            objMeshData->indices = m_Model->initializedIndices;
+            objMeshData->indices = initializedIndices;
         }
 
-        meshSequenceData[std::to_string(curLoadingModelIndex)] = objMeshData;
+        meshSequenceData1[std::to_string(curLoadingModelIndex)] = objMeshData;
 
-//        if(curLoadingModelIndex > 2)
+        //        if(curLoadingModelIndex > 2)
 //        {
 //            clearOldFrameData();
-            if(objMeshData != nullptr)
-            {
-                delete objMeshData;
-                objMeshData = nullptr;
-            }
+//        if(objMeshData != nullptr)
+//        {
+//            delete objMeshData;
+//            objMeshData = nullptr;
+//        }
 //        }
 
         loadedModelCount++;
 
-        auto end = system_clock::now();
-        auto duration = duration_cast<microseconds>(end - start);
-        cout << "total loding time cost : " << double(duration.count()) *microseconds::period::num / microseconds::period::den << "seconds" << endl;
+//        delete cmdBuffer;
         return true;
     }
+
+
+//    bool loadRestModels(){
+//
+//        auto start = system_clock::now();
+//        curLoadingModelIndex = loadedModelCount;
+//
+//
+//        if(curLoadingModelIndex >= objFileCount)
+//        {
+////            usleep(33000);//force changing fps!
+//            return true;
+////            curLoadingModelIndex %= objFileCount;
+//        }
+//
+//        cout << "loadModels() : loading model number :  " << curLoadingModelIndex << endl;// uniqueVertices.size == 3566
+////            auto objMeshData = std::make_unique<SingleMeshData>();
+//        SingleMeshData* objMeshData = new SingleMeshData();
+//        std::string path = (std::string)((const char*)(objFileList[curLoadingModelIndex].absoluteFilePath()).toLocal8Bit());
+//        cout << "loadRestModels() : currrent model path is " << path << endl;
+//        if(!loadModel1(path, objMeshData, curLoadingModelIndex))
+//        {
+//            throw std::runtime_error("failed to loadwenjianming  model number " + to_string(curLoadingModelIndex));
+//        }
+//
+//        meshSequenceData[std::to_string(curLoadingModelIndex)] = objMeshData;
+//
+////        if(curLoadingModelIndex > 2)
+////        {
+////            clearOldFrameData();
+//            if(objMeshData != nullptr)
+//            {
+//                delete objMeshData;
+//                objMeshData = nullptr;
+//            }
+////        }
+//
+//        loadedModelCount++;
+//
+//        auto end = system_clock::now();
+//        auto duration = duration_cast<microseconds>(end - start);
+//        cout << "total loding time cost : " << double(duration.count()) *microseconds::period::num / microseconds::period::den << "seconds" << endl;
+//        return true;
+//    }
 
     bool getFilesList() {
         path = QString::fromLocal8Bit(MODEL_PATH_PREFIX.c_str());
@@ -419,127 +516,276 @@ private:
         return true;
     }
 
-    bool loadModel1(const std::string path, SingleMeshData* data, uint32_t modelIndex) {
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string warn, err;
-        bool isFirstModel = true;
-        int curCount = 0;
-        if(modelIndex > 0)
-        {
-            isFirstModel = false;
-        }
+//    bool loadModel1(const std::string path, SingleMeshData* data, uint32_t modelIndex) {
+//        tinyobj::attrib_t attrib;
+//        std::vector<tinyobj::shape_t> shapes;
+//        std::vector<tinyobj::material_t> materials;
+//        std::string warn, err;
+//        bool isFirstModel = true;
+//        int curCount = 0;
+//        if(modelIndex > 0)
+//        {
+//            isFirstModel = false;
+//        }
+//
+//        gIsFirstModel = isFirstModel;
+//
+//        cout << "loadModel1() : currrent model path is " << path << endl;
+////        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+////        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str())) {
+//        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), NULL, true, true, !isFirstModel)) {
+//
+//            throw std::runtime_error(warn + err);
+//            return false;
+//        }
+//
+////        std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+//
+//        if(modelIndex == 0 && shapes.size() > 0)
+//        {
+//            initializedShapes = shapes;
+//            initializedAttrib = attrib;
+//        }
+//
+//        std::vector<tinyobj::shape_t> tempShapes = initializedShapes;
+//
+////        for (const auto& shape : shapes) {
+//        for (const auto& shape : tempShapes) {
+//            if(isFirstModel)
+//                initializedFaces = shape.mesh.indices;
+//
+//            for (const auto& index : shape.mesh.indices) {
+//                Vertex vertex = {};
+//
+//                if(index.vertex_index >= 0 && attrib.vertices.size() > 0)
+//                {
+//                    vertex.pos = {
+//                        attrib.vertices[3 * index.vertex_index + 0],
+//                        attrib.vertices[3 * index.vertex_index + 1],
+//                        attrib.vertices[3 * index.vertex_index + 2]
+//                    };
+//                }
+//
+//
+//                if(index.texcoord_index >= 0 && attrib.texcoords.size() > 0)
+//                {
+//                    vertex.texCoord = {
+//                        attrib.texcoords[2 * index.texcoord_index + 0],
+//                        //attrib.texcoords[2 * index.texcoord_index + 1]
+//                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+//                    };
+//                }
+//                else
+//                {
+//                    if(!isFirstModel)
+//                    {
+//                        vertex.texCoord = {
+//                            initializedAttrib.texcoords[2 * initializedFaces[curCount].texcoord_index + 0],
+//                            1.0f - initializedAttrib.texcoords[2 * initializedFaces[curCount].texcoord_index + 1]
+//                        };
+//                    }
+//                }
+//
+//                if(index.vertex_index >= 0 && attrib.colors.size() > 0)
+//                {
+////                vertex.color = { 1.0f, 1.0f, 1.0f };
+//                    vertex.color = { attrib.colors[3 * index.vertex_index + 0], attrib.colors[3 * index.vertex_index + 1], attrib.colors[3 * index.vertex_index + 2] };
+//
+//                }
+//
+////                if (data->uniqueVertices.count(vertex) == 0) {// if not contained yet
+////                    data->uniqueVertices[vertex] = static_cast<uint32_t>(data->vertices.size());
+////                    data->vertices.push_back(vertex);
+////                }
+//
+//                data->vertices.push_back(vertex);
+//                //indices.push_back(indices.size());
+//                if(isFirstModel)
+//                {
+////                    data->indices.push_back(data->uniqueVertices[vertex]);
+//                    data->indices.push_back(data->indices.size());
+//                }
+//
+//                curCount++;
+//            }
+//
+//
+//        }
+//
+////        indices = data->indices;
+//
+//        if(isFirstModel)
+//        {
+////            vertices = data->vertices;
+//            initializedVertices = data->vertices;
+//            initializedIndices = data->indices;
+//        }
+//        else
+//        {
+//            data->indices = initializedIndices;
+//        }
+//
+//        cout << "vertices.size == " << data->vertices.size() << endl;// vertices.size == 11484(before); 3566(after)
+//        cout << "indices.size == " << data->indices.size() << endl;// indices.size ==11484
+//        cout << "uniqueVertices.size == " << data->uniqueVertices.size() << endl;// uniqueVertices.size == 3566
+//        cout << "model " << modelIndex << " loaded successfully!" << "!\n" << endl;// uniqueVertices.size == 3566
+//
+//        if(modelIndex == MAX_OBJS_PRELOAD - 1)
+//        {
+//            cout << "index == " << (MAX_OBJS_PRELOAD - 1) << "! The last model data was loaded yet!" << "!\n" << endl;
+//        }
+//
+//
+//        return true;
+//    }
 
 
-        cout << "loadModel1() : currrent model path is " << path << endl;
-//        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
-//        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str())) {
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str(), NULL, true, true, !isFirstModel)) {
 
-            throw std::runtime_error(warn + err);
+    bool createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+
+        VkBufferCreateInfo bufferInfo = {};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+//        bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+        bufferInfo.size = size;
+//        bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+        bufferInfo.usage = usage;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        if(vkCreateBuffer(curVkDevice, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create buffer!");
             return false;
         }
 
-//        std::unordered_map<Vertex, uint32_t> uniqueVertices = {};
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(curVkDevice, buffer, &memRequirements);
 
-        if(modelIndex == 0 && shapes.size() > 0)
-        {
-            initializedShapes = shapes;
-            initializedAttrib = attrib;
+        VkMemoryAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+//        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+        allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+        if (vkAllocateMemory(curVkDevice, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate buffer memory!");
+            return false;
         }
+        vkBindBufferMemory(curVkDevice, buffer, bufferMemory, 0);
 
-        std::vector<tinyobj::shape_t> tempShapes = initializedShapes;
+        return true;
 
-//        for (const auto& shape : shapes) {
-        for (const auto& shape : tempShapes) {
-            if(isFirstModel)
-                initializedFaces = shape.mesh.indices;
+    }
 
-            for (const auto& index : shape.mesh.indices) {
-                Vertex vertex = {};
+    VkCommandBuffer beginSingleTimeCommands() {
+        VkCommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandPool = commandPool;
+        allocInfo.commandBufferCount = 1;
 
-                if(index.vertex_index >= 0 && attrib.vertices.size() > 0)
-                {
-                    vertex.pos = {
-                        attrib.vertices[3 * index.vertex_index + 0],
-                        attrib.vertices[3 * index.vertex_index + 1],
-                        attrib.vertices[3 * index.vertex_index + 2]
-                    };
-                }
+        VkCommandBuffer commandBuffer;
+        vkAllocateCommandBuffers(curVkDevice, &allocInfo, &commandBuffer);
 
+        VkCommandBufferBeginInfo beginInfo = {};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-                if(index.texcoord_index >= 0 && attrib.texcoords.size() > 0)
-                {
-                    vertex.texCoord = {
-                        attrib.texcoords[2 * index.texcoord_index + 0],
-                        //attrib.texcoords[2 * index.texcoord_index + 1]
-                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                    };
-                }
-                else
-                {
-                    if(!isFirstModel)
-                    {
-                        vertex.texCoord = {
-                            initializedAttrib.texcoords[2 * initializedFaces[curCount].texcoord_index + 0],
-                            1.0f - initializedAttrib.texcoords[2 * initializedFaces[curCount].texcoord_index + 1]
-                        };
-                    }
-                }
+        vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
-                if(index.vertex_index >= 0 && attrib.colors.size() > 0)
-                {
-//                vertex.color = { 1.0f, 1.0f, 1.0f };
-                    vertex.color = { attrib.colors[3 * index.vertex_index + 0], attrib.colors[3 * index.vertex_index + 1], attrib.colors[3 * index.vertex_index + 2] };
+        return commandBuffer;
+    }
 
-                }
+    bool endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+        vkEndCommandBuffer(commandBuffer);
 
-//                if (data->uniqueVertices.count(vertex) == 0) {// if not contained yet
-//                    data->uniqueVertices[vertex] = static_cast<uint32_t>(data->vertices.size());
-//                    data->vertices.push_back(vertex);
-//                }
-
-                data->vertices.push_back(vertex);
-                //indices.push_back(indices.size());
-                if(isFirstModel)
-                {
-//                    data->indices.push_back(data->uniqueVertices[vertex]);
-                    data->indices.push_back(data->indices.size());
-                }
-
-                curCount++;
-            }
+        VkSubmitInfo submitInfo = {};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer;
 
 
-        }
+        vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(graphicsQueue);
 
-//        indices = data->indices;
-
-        if(isFirstModel)
-        {
-//            vertices = data->vertices;
-            initializedVertices = data->vertices;
-            initializedIndices = data->indices;
-        }
-        else
-        {
-            data->indices = initializedIndices;
-        }
-
-        cout << "vertices.size == " << data->vertices.size() << endl;// vertices.size == 11484(before); 3566(after)
-        cout << "indices.size == " << data->indices.size() << endl;// indices.size ==11484
-        cout << "uniqueVertices.size == " << data->uniqueVertices.size() << endl;// uniqueVertices.size == 3566
-        cout << "model " << modelIndex << " loaded successfully!" << "!\n" << endl;// uniqueVertices.size == 3566
-
-        if(modelIndex == MAX_OBJS_PRELOAD - 1)
-        {
-            cout << "index == " << (MAX_OBJS_PRELOAD - 1) << "! The last model data was loaded yet!" << "!\n" << endl;
-        }
-
+        vkFreeCommandBuffers(curVkDevice, commandPool, 1, &commandBuffer);
 
         return true;
     }
+
+
+
+    bool copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+        VkBufferCopy copyRegion = {};
+        copyRegion.srcOffset = 0;// start copy from start of src;
+        copyRegion.dstOffset = 0;
+//        copyRegion.dstOffset = currOffset;
+        copyRegion.size = size;
+
+        vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+        endSingleTimeCommands(commandBuffer);
+
+        return true;
+    }
+
+
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+        renderInfo.memory_properties = memProperties;
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+
+        //renderInfo.memory_properties = memProperties;
+
+        throw std::runtime_error("failed to find suitable memory type!");
+
+    }
+
+    bool updateVertexBuffer() {
+
+        if(curFrameNum >= objFileCount) {
+            return false;
+        }
+//        else
+//        {
+//            curFrameNum %= objFileCount;
+//        }
+
+        std::string keyStr = to_string(curFrameNum);
+//        keyStr = "0";
+        cout << " updateVertexBuffer() : keyStr == " << keyStr << endl;
+//        curVertices = meshSequenceData[keyStr]->vertices;
+        curVertices = meshSequenceData1[keyStr]->vertices;
+        void* data;
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+
+        vertexBufferSize = m_Model->m_VertexBufferSize;
+        indexBufferSize = m_Model->m_IndexBufferSize;
+        createBuffer(vertexBufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        vkMapMemory(curVkDevice, stagingBufferMemory, 0, vertexBufferSize, 0, &data);
+        memcpy(data, curVertices.data(), (size_t)vertexBufferSize);
+//        vkFlushMappedMemoryRanges()
+//        vkUnmapMemory(device, vertexBufferMemory);
+        vkUnmapMemory(curVkDevice, stagingBufferMemory);
+
+//        copyBuffer(stagingBuffer, vertexBuffer, vertexBufferSize);
+        copyBuffer(stagingBuffer, m_Model->m_VertexBuffer, vertexBufferSize);
+
+        vkDestroyBuffer(curVkDevice, stagingBuffer, nullptr);
+        vkFreeMemory(curVkDevice, stagingBufferMemory, nullptr);
+
+        return true;
+    }
+
 
 	void Draw(float time, float delta)
 	{
@@ -561,11 +807,14 @@ private:
 
 //		if(curFrameNum == 10)
 //        {
-        write_png(renderInfo, string("output/png/frame_" + formatNumByDigit(curFrameNum)).c_str());
+//        write_png(renderInfo, string("output/png/frame_" + formatNumByDigit(curFrameNum)).c_str());
 //            write_png(renderInfo, string("frame_" + formatNumByDigit(curFrameNum)).c_str());
 //        }
 
         curFrameNum++;
+
+        if(!updateVertexBuffer())
+            return;
 	}
     
 	bool UpdateUI(float time, float delta)
@@ -610,7 +859,10 @@ private:
 
 	void LoadAssets()
 	{
-		vk_demo::DVKCommandBuffer* cmdBuffer = vk_demo::DVKCommandBuffer::Create(m_VulkanDevice, m_CommandPool);
+        gIsFirstModel = true;
+
+        vk_demo::DVKCommandBuffer* cmdBuffer = vk_demo::DVKCommandBuffer::Create(m_VulkanDevice, m_CommandPool);
+		m_CmdBuffer = cmdBuffer;
 
 		m_Model = vk_demo::DVKModel::LoadFromFile(
 //			"assets/models/head.obj",
@@ -627,11 +879,12 @@ private:
 		m_TexCurvature     = vk_demo::DVKTexture::Create2D("assets/textures/curvatureLUT.png", m_VulkanDevice, cmdBuffer);
 		m_TexPreIntegrated = vk_demo::DVKTexture::Create2D("assets/textures/preIntegratedLUT.png", m_VulkanDevice, cmdBuffer);
 
-        SingleMeshData* objMeshData = new SingleMeshData();
-
-        meshSequenceData[std::to_string(curLoadingModelIndex)] = objMeshData;
-
+//        SingleMeshData* objMeshData = new SingleMeshData();
+//
+//        meshSequenceData[std::to_string(curLoadingModelIndex)] = objMeshData;
+//
         loadedModelCount++;
+        m_FirstModel = m_Model;
 
 		delete cmdBuffer;
 	}
@@ -938,94 +1191,16 @@ private:
     
 	ImageGUIContext*				m_GUI = nullptr;
 
-    GLFWwindow* window;
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-    VkSurfaceKHR surface;
-
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    std::vector<VkPhysicalDevice> physicalDevices;
-    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-    VkDevice curVkDevice;
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
-
-    VkSwapchainKHR swapChain;
-    std::vector<VkImage> swapChainImages;
-    VkFormat swapChainImageFormat;
-    VkExtent2D swapChainExtent;
-    std::vector<VkImageView> swapChainImageViews;
-    std::vector<VkFramebuffer> swapChainFramebuffers;
-
-    uint32_t availableValidationLayerFoundCount = 0;
-
-    VkRenderPass renderPass;
-    VkDescriptorSetLayout descriptorSetLayout;
-    VkPipelineLayout pipelineLayout;
-    VkPipeline graphicsPipeline;
-
-    VkCommandPool commandPool;
-
-    VkImage colorImage;
-    VkDeviceMemory colorImageMemory;
-    VkImageView colorImageView;
-
-    VkImage depthImage;
-    VkDeviceMemory depthImageMemory;
-    VkImageView depthImageView;
-
-    uint32_t mipLevels = 0;
-    VkImage textureImage;
-    VkDeviceMemory textureImageMemory;
-    VkImageView textureImageView;
-    VkSampler textureSampler;
-
-    std::vector<Vertex> initializedVertices;
-    std::vector<uint32_t> initializedIndices;
-    std::vector<index_t> initializedFaces;
-    std::vector<tinyobj::shape_t> initializedShapes;
-    tinyobj::attrib_t initializedAttrib;
-
-    VkBuffer vertexBuffer;
-    VkDeviceMemory vertexBufferMemory;
-    VkBuffer indexBuffer;
-    VkDeviceMemory indexBufferMemory;
-    VkDeviceSize vertexBufferSize;
-
-//    VkBuffer stagingBuffer;
-//    VkDeviceMemory stagingBufferMemory;
-
-    std::vector<Vertex> firstVertices;
-    std::vector<Vertex> curVertices;
+    vk_demo::DVKCommandBuffer* m_CmdBuffer = nullptr;
 
 
-
-    std::vector<VkBuffer> uniformBuffers;
-    std::vector<VkDeviceMemory> uniformBuffersMemory;
-
-    VkDescriptorPool descriptorPool;
-    std::vector<VkDescriptorSet> descriptorSets;
-
-    std::vector<VkCommandBuffer> commandBuffers;
-
-
-    /*VkSemaphore imageAvailableSemaphore;
-    VkSemaphore renderFinishedSemaphore;*/
-
-    std::vector<VkSemaphore> imageAvailableSemaphores;
-    std::vector<VkSemaphore> renderFinishedSemaphores;
-    std::vector<VkFence> inFlightFences;
-    std::vector<VkFence> imagesInFlight;
-    size_t currentFrame = 0;
-    int lastFrameNum = 0;
-    int curFrameNum = 0;
-     uint32_t imageIndex = 0;
-    bool framebufferResized = false;
 
     //----------------------------------------------------------20201016-------------------------------------//
 
 //    std::unordered_map<std::string, std::unique_ptr<SingleMeshData>> meshSequenceData;
     std::unordered_map<std::string, const SingleMeshData*> meshSequenceData;
+    std::unordered_map<std::string, const SingleMeshData1*> meshSequenceData1;
+
 
     QString objFileName;
     QStringList objStringList;
@@ -1044,11 +1219,12 @@ private:
     uint32_t loadedModelCount = 0;
     uint32_t curLoadingModelIndex = 0;
 
-//    sample_info renderInfo = {};
-    VkSwapchainCreateInfoKHR swapChainCreateInfo = {};
+
 
  std::vector<VkImage> mMappableImages;
  std::vector<VkDeviceMemory> mMappableMemories;
+
+ vk_demo::DVKModel*	m_FirstModel = nullptr;
 
 };
 

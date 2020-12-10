@@ -211,6 +211,7 @@ protected:
 	typedef std::shared_ptr<VulkanSwapChain> VulkanSwapChainRef;
     
 	VkDevice						m_Device;
+	VkPhysicalDevice                m_PhysicalDevice;
 	std::shared_ptr<VulkanDevice>	m_VulkanDevice;
 	VkQueue							m_GfxQueue;
 	VkQueue							m_PresentQueue;
@@ -250,6 +251,93 @@ protected:
     std::vector<VkFramebuffer> db_swapChainFramebuffers;
 
     sample_info renderInfo = {};
+
+    VkSwapchainCreateInfoKHR swapChainCreateInfo = {};
+
+    GLFWwindow* window;
+    VkInstance instance;
+    VkDebugUtilsMessengerEXT debugMessenger;
+    VkSurfaceKHR surface;
+
+    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+    std::vector<VkPhysicalDevice> physicalDevices;
+    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+    VkDevice curVkDevice;
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
+
+    VkSwapchainKHR swapChain;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat;
+    VkExtent2D swapChainExtent;
+    std::vector<VkImageView> swapChainImageViews;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+
+    uint32_t availableValidationLayerFoundCount = 0;
+
+    VkRenderPass renderPass;
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline;
+
+    VkCommandPool commandPool;
+
+    VkImage colorImage;
+    VkDeviceMemory colorImageMemory;
+    VkImageView colorImageView;
+
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    uint32_t mipLevels = 0;
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+    VkSampler textureSampler;
+
+
+//    std::vector<Vertex> initializedVertices;
+//    std::vector<uint32_t> initializedIndices;
+//    std::vector<index_t> initializedFaces;
+//    std::vector<tinyobj::shape_t> initializedShapes;
+//    tinyobj::attrib_t initializedAttrib;
+
+    VkBuffer vertexBuffer;
+    VkDeviceMemory vertexBufferMemory;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
+    VkDeviceSize vertexBufferSize;
+    VkDeviceSize indexBufferSize;
+
+//    VkBuffer stagingBuffer;
+//    VkDeviceMemory stagingBufferMemory;
+
+//    std::vector<Vertex> firstVertices;
+//    std::vector<Vertex> curVertices;
+    std::vector<float> curVertices;
+
+
+
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
+
+    VkDescriptorPool descriptorPool;
+    std::vector<VkDescriptorSet> descriptorSets;
+
+    std::vector<VkCommandBuffer> commandBuffers;
+
+
+    /*VkSemaphore imageAvailableSemaphore;
+    VkSemaphore renderFinishedSemaphore;*/
+
+    std::vector<VkSemaphore> imageAvailableSemaphores;
+    std::vector<VkSemaphore> renderFinishedSemaphores;
+    std::vector<VkFence> inFlightFences;
+    std::vector<VkFence> imagesInFlight;
+
+    uint32_t imageIndex = 0;
+    bool framebufferResized = false;
 
 
 

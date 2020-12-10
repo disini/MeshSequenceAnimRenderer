@@ -17,3 +17,8 @@
 #include "DVKCompute.h"
 #include "FileManager.h"
 #include "ImageGUIContext.h"
+#include "../../../../3rdparty/utils/GlobalManager.h"
+#include "../../../../3rdparty/utils/debugUtils.h"
+#include "../../../../3rdparty/utils/formatUtils.h"
+#include "../../../../3rdparty/utils/util.hpp"
+#include "../../../../3rdparty/utils/util_init.hpp"

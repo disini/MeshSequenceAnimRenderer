@@ -8,6 +8,14 @@
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
 
+#include "utils/GlobalManager.h"
+
+std::vector<float> initializedVertices;
+std::vector<uint32> initializedIndices;
+vk_demo::DVKMesh* initializedMesh;
+vk_demo::DVKBoundingBox initializedBounding;
+int32 initializedVerticesDataStride;
+
 namespace vk_demo
 {
 	void SimplifyTexturePath(std::string& path)
@@ -115,7 +123,7 @@ namespace vk_demo
         return model;
     }
 
-	DVKModel* DVKModel::LoadFromFile(const std::string& filename, std::shared_ptr<VulkanDevice> vulkanDevice, DVKCommandBuffer* cmdBuffer, const std::vector<VertexAttribute>& attributes)
+	DVKModel* DVKModel::LoadFromFile(const std::string& filename, std::shared_ptr<VulkanDevice> vulkanDevice, DVKCommandBuffer* cmdBuffer, const std::vector<VertexAttribute>& attributes, bool isRelativePath)
     {
         DVKModel* model   = new DVKModel();
         model->device     = vulkanDevice;
@@ -147,7 +155,7 @@ namespace vk_demo
         
         uint32 dataSize = 0;
         uint8* dataPtr  = nullptr;
-        if (!FileManager::ReadFile(filename, dataPtr, dataSize)) {
+        if (!FileManager::ReadFile(filename, dataPtr, dataSize, isRelativePath)) {
             return model;
         }
         
@@ -261,6 +269,7 @@ namespace vk_demo
         
         for (int32 i = 0; i < aiMesh->mNumVertices; ++i)
         {
+            int32 vertexDataValueCount = 0;
             for (int32 j = 0; j < attributes.size(); ++j)
             {
                 if (attributes[j] == VertexAttribute::VA_Position)
@@ -268,137 +277,211 @@ namespace vk_demo
                     float v0 = aiMesh->mVertices[i].x;
                     float v1 = aiMesh->mVertices[i].y;
                     float v2 = aiMesh->mVertices[i].z;
-                    
+
                     vertices.push_back(v0);
                     vertices.push_back(v1);
                     vertices.push_back(v2);
-                    
-                    mmin.x = MMath::Min(v0, mmin.x);
-                    mmin.y = MMath::Min(v1, mmin.y);
-                    mmin.z = MMath::Min(v2, mmin.z);
-                    mmax.x = MMath::Max(v0, mmax.x);
-                    mmax.y = MMath::Max(v1, mmax.y);
-                    mmax.z = MMath::Max(v2, mmax.z);
+
+                    if (gIsFirstModel) {
+                        mmin.x = MMath::Min(v0, mmin.x);
+                        mmin.y = MMath::Min(v1, mmin.y);
+                        mmin.z = MMath::Min(v2, mmin.z);
+                        mmax.x = MMath::Max(v0, mmax.x);
+                        mmax.y = MMath::Max(v1, mmax.y);
+                        mmax.z = MMath::Max(v2, mmax.z);
+                    }
+
+                    vertexDataValueCount += 3;
                 }
                 else if (attributes[j] == VertexAttribute::VA_UV0)
                 {
-					if (aiMesh->HasTextureCoords(0)) 
-					{
-						vertices.push_back(aiMesh->mTextureCoords[0][i].x);
-						vertices.push_back(aiMesh->mTextureCoords[0][i].y);
-					}
-					else 
-					{
-						vertices.push_back(0);
-						vertices.push_back(0);
-					}
+                    if (gIsFirstModel) {
+
+                        if (aiMesh->HasTextureCoords(0)) {
+                            vertices.push_back(aiMesh->mTextureCoords[0][i].x);
+                            vertices.push_back(aiMesh->mTextureCoords[0][i].y);
+                        } else {
+                            vertices.push_back(0);
+                            vertices.push_back(0);
+                        }
+                    }
+                    else
+                    {
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                    }
+
+                    vertexDataValueCount += 2;
                 }
                 else if (attributes[j] == VertexAttribute::VA_UV1)
                 {
-					if (aiMesh->HasTextureCoords(1))
-					{
-						vertices.push_back(aiMesh->mTextureCoords[1][i].x);
-						vertices.push_back(aiMesh->mTextureCoords[1][i].y);
-					}
-					else
-					{
-						vertices.push_back(0);
-						vertices.push_back(0);
-					}
+                    if (gIsFirstModel) {
+                        if (aiMesh->HasTextureCoords(1))
+                        {
+                            vertices.push_back(aiMesh->mTextureCoords[1][i].x);
+                            vertices.push_back(aiMesh->mTextureCoords[1][i].y);
+                        }
+                        else
+                        {
+                            vertices.push_back(0);
+                            vertices.push_back(0);
+                        }
+                    }
+                    else
+                    {
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                    }
+                    vertexDataValueCount += 2;
                 }
                 else if (attributes[j] == VertexAttribute::VA_Normal)
                 {
-                    vertices.push_back(aiMesh->mNormals[i].x);
-                    vertices.push_back(aiMesh->mNormals[i].y);
-                    vertices.push_back(aiMesh->mNormals[i].z);
+                    if (gIsFirstModel) {
+                        vertices.push_back(aiMesh->mNormals[i].x);
+                        vertices.push_back(aiMesh->mNormals[i].y);
+                        vertices.push_back(aiMesh->mNormals[i].z);
+                    }
+                    else
+                    {
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 2]);
+                    }
+                    vertexDataValueCount += 3;
                 }
                 else if (attributes[j] == VertexAttribute::VA_Tangent)
                 {
-                    vertices.push_back(aiMesh->mTangents[i].x);
-                    vertices.push_back(aiMesh->mTangents[i].y);
-                    vertices.push_back(aiMesh->mTangents[i].z);
-                    vertices.push_back(1);
+                    if (gIsFirstModel) {
+                        vertices.push_back(aiMesh->mTangents[i].x);
+                        vertices.push_back(aiMesh->mTangents[i].y);
+                        vertices.push_back(aiMesh->mTangents[i].z);
+                        vertices.push_back(1);
+                    }
+                    else
+                    {
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 2]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 3]);
+                    }
+                    vertexDataValueCount += 4;
                 }
                 else if (attributes[j] == VertexAttribute::VA_Color)
                 {
-                    if (aiMesh->HasVertexColors(i))
-                    {
-                        vertices.push_back(aiMesh->mColors[0][i].r);
-                        vertices.push_back(aiMesh->mColors[0][i].g);
-                        vertices.push_back(aiMesh->mColors[0][i].b);
+                    if (gIsFirstModel) {
+                        if (aiMesh->HasVertexColors(i))
+                        {
+                            vertices.push_back(aiMesh->mColors[0][i].r);
+                            vertices.push_back(aiMesh->mColors[0][i].g);
+                            vertices.push_back(aiMesh->mColors[0][i].b);
+                        }
+                        else
+                        {
+                            vertices.push_back(defaultColor.x);
+                            vertices.push_back(defaultColor.y);
+                            vertices.push_back(defaultColor.z);
+                        }
                     }
                     else
                     {
-                        vertices.push_back(defaultColor.x);
-                        vertices.push_back(defaultColor.y);
-                        vertices.push_back(defaultColor.z);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 2]);
                     }
+                    vertexDataValueCount += 3;
                 }
 				else if (attributes[j] == VertexAttribute::VA_SkinPack)
 				{
-					if (mesh->isSkin)
-					{
-						DVKVertexSkin& skin = skinInfoMap[i];
+                    if (gIsFirstModel) {
+                        if (mesh->isSkin)
+                        {
+                            DVKVertexSkin& skin = skinInfoMap[i];
 
-						int32 idx0 = skin.indices[0];
-						int32 idx1 = skin.indices[1];
-						int32 idx2 = skin.indices[2];
-						int32 idx3 = skin.indices[3];
-						uint32 packIndex = (idx0 << 24) + (idx1 << 16) + (idx2 << 8) + idx3;
+                            int32 idx0 = skin.indices[0];
+                            int32 idx1 = skin.indices[1];
+                            int32 idx2 = skin.indices[2];
+                            int32 idx3 = skin.indices[3];
+                            uint32 packIndex = (idx0 << 24) + (idx1 << 16) + (idx2 << 8) + idx3;
 
-						uint16 weight0 = skin.weights[0] * 65535;
-						uint16 weight1 = skin.weights[1] * 65535;
-						uint16 weight2 = skin.weights[2] * 65535;
-						uint16 weight3 = skin.weights[3] * 65535;
-						uint32 packWeight0 = (weight0 << 16) + weight1;
-						uint32 packWeight1 = (weight2 << 16) + weight3;
+                            uint16 weight0 = skin.weights[0] * 65535;
+                            uint16 weight1 = skin.weights[1] * 65535;
+                            uint16 weight2 = skin.weights[2] * 65535;
+                            uint16 weight3 = skin.weights[3] * 65535;
+                            uint32 packWeight0 = (weight0 << 16) + weight1;
+                            uint32 packWeight1 = (weight2 << 16) + weight3;
 
-						vertices.push_back(packIndex);
-						vertices.push_back(packWeight0);
-						vertices.push_back(packWeight1);
-					}
-					else
-					{
-						vertices.push_back(0);
-						vertices.push_back(65535);
-						vertices.push_back(0);
-					}
+                            vertices.push_back(packIndex);
+                            vertices.push_back(packWeight0);
+                            vertices.push_back(packWeight1);
+                        }
+                        else
+                        {
+                            vertices.push_back(0);
+                            vertices.push_back(65535);
+                            vertices.push_back(0);
+                        }
+                    }
+                    else
+                    {
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 2]);
+                    }
+                    vertexDataValueCount += 3;
 				}
                 else if (attributes[j] == VertexAttribute::VA_SkinIndex)
                 {
-                    if (mesh->isSkin)
-                    {
-						DVKVertexSkin& skin = skinInfoMap[i];
-                        vertices.push_back(skin.indices[0]);
-                        vertices.push_back(skin.indices[1]);
-                        vertices.push_back(skin.indices[2]);
-                        vertices.push_back(skin.indices[3]);
+                    if (gIsFirstModel) {
+                        if (mesh->isSkin)
+                        {
+                            DVKVertexSkin& skin = skinInfoMap[i];
+                            vertices.push_back(skin.indices[0]);
+                            vertices.push_back(skin.indices[1]);
+                            vertices.push_back(skin.indices[2]);
+                            vertices.push_back(skin.indices[3]);
+                        }
+                        else
+                        {
+                            vertices.push_back(0);
+                            vertices.push_back(0);
+                            vertices.push_back(0);
+                            vertices.push_back(0);
+                        }
                     }
                     else
                     {
-                        vertices.push_back(0);
-                        vertices.push_back(0);
-                        vertices.push_back(0);
-                        vertices.push_back(0);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 2]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 3]);
                     }
+                    vertexDataValueCount += 4;
                 }
                 else if (attributes[j] == VertexAttribute::VA_SkinWeight)
                 {
-                    if (mesh->isSkin)
-                    {
-						DVKVertexSkin& skin = skinInfoMap[i];
-                        vertices.push_back(skin.weights[0]);
-                        vertices.push_back(skin.weights[1]);
-                        vertices.push_back(skin.weights[2]);
-                        vertices.push_back(skin.weights[3]);
+                    if (gIsFirstModel) {
+                        if (mesh->isSkin) {
+                            DVKVertexSkin &skin = skinInfoMap[i];
+                            vertices.push_back(skin.weights[0]);
+                            vertices.push_back(skin.weights[1]);
+                            vertices.push_back(skin.weights[2]);
+                            vertices.push_back(skin.weights[3]);
+                        } else {
+                            vertices.push_back(1.0f);
+                            vertices.push_back(0.0f);
+                            vertices.push_back(0.0f);
+                            vertices.push_back(0.0f);
+                        }
                     }
                     else
                     {
-                        vertices.push_back(1.0f);
-                        vertices.push_back(0.0f);
-                        vertices.push_back(0.0f);
-                        vertices.push_back(0.0f);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 2]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 3]);
                     }
+                    vertexDataValueCount += 4;
+
                 }
                 else if (attributes[j] == VertexAttribute::VA_Custom0 ||
                          attributes[j] == VertexAttribute::VA_Custom1 ||
@@ -406,34 +489,72 @@ namespace vk_demo
                          attributes[j] == VertexAttribute::VA_Custom3
                 )
                 {
-                    vertices.push_back(0.0f);
-                    vertices.push_back(0.0f);
-                    vertices.push_back(0.0f);
-                    vertices.push_back(0.0f);
+                    if (gIsFirstModel) {
+                        vertices.push_back(0.0f);
+                        vertices.push_back(0.0f);
+                        vertices.push_back(0.0f);
+                        vertices.push_back(0.0f);
+                    }
+                    else
+                    {
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 1]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 2]);
+                        vertices.push_back(initializedVertices[initializedVerticesDataStride * i + vertexDataValueCount + 3]);
+                    }
+                    vertexDataValueCount += 4;
                 }
+
             }
+        }
+
+        if(gIsFirstModel)
+        {
+            initializedVertices = vertices;
+        }
+        else
+        {
+
         }
     }
     
     void DVKModel::LoadIndices(std::vector<uint32>& indices, const aiMesh* aiMesh, const aiScene* aiScene)
     {
-        for (int32 i = 0; i < aiMesh->mNumFaces; ++i)
+
+
+        if(gIsFirstModel)
         {
-            indices.push_back(aiMesh->mFaces[i].mIndices[0]);
-            indices.push_back(aiMesh->mFaces[i].mIndices[1]);
-            indices.push_back(aiMesh->mFaces[i].mIndices[2]);
+            for (int32 i = 0; i < aiMesh->mNumFaces; ++i)
+            {
+                indices.push_back(aiMesh->mFaces[i].mIndices[0]);
+                indices.push_back(aiMesh->mFaces[i].mIndices[1]);
+                indices.push_back(aiMesh->mFaces[i].mIndices[2]);
+            }
+            initializedIndices = indices;
+        }
+        else
+        {
+            indices = initializedIndices;
         }
     }
     
-    void DVKModel::LoadPrimitives(std::vector<float>& vertices, std::vector<uint32>& indices, DVKMesh* mesh, const aiMesh* aiMesh, const aiScene* aiScene)
-    {
-        int32 stride = vertices.size() / aiMesh->mNumVertices;
+    void DVKModel::LoadPrimitives(std::vector<float>& vertices, std::vector<uint32>& indices, DVKMesh* mesh, const aiMesh* aiMesh, const aiScene* aiScene) {
+        int32 stride;
+        DVKPrimitive* primitive;
+	    if (gIsFirstModel) {
+            stride = vertices.size() / aiMesh->mNumVertices;
+            initializedVerticesDataStride = stride;
+        }
+        else {
+            stride = initializedVerticesDataStride;
+        }
 
         if (indices.size() > 65535)
         {
             std::unordered_map<uint32, uint32> indicesMap;
-            DVKPrimitive* primitive = nullptr;
-            
+//            DVKPrimitive* primitive = nullptr;
+            primitive = nullptr;
+
             for (int32 i = 0; i < indices.size(); ++i) {
                 uint32 idx = indices[i];
                 if (primitive == nullptr) 
@@ -476,7 +597,8 @@ namespace vk_demo
         }
         else
         {
-            DVKPrimitive* primitive = new DVKPrimitive();
+//            DVKPrimitive* primitive = new DVKPrimitive();
+            primitive = new DVKPrimitive();
             primitive->vertices = vertices;
             for (uint16 i = 0; i < indices.size(); ++i) {
                 primitive->indices.push_back(indices[i]);
@@ -487,8 +609,19 @@ namespace vk_demo
             {
                 primitive->vertexBuffer = DVKVertexBuffer::Create(device, cmdBuffer, primitive->vertices, attributes);
                 primitive->indexBuffer  = DVKIndexBuffer::Create(device, cmdBuffer, primitive->indices);
+
+
             }
         }
+
+        m_VertexBuffer = primitive->vertexBuffer->dvkBuffer->buffer;
+        m_IndexBuffer = primitive->indexBuffer->dvkBuffer->buffer;
+
+        m_VertexBufferMemory = primitive->vertexBuffer->dvkBuffer->memory;
+        m_IndexBufferMemory = primitive->indexBuffer->dvkBuffer->memory;
+
+        m_VertexBufferSize = primitive->vertexBuffer->dvkBuffer->size;
+        m_IndexBufferSize = primitive->indexBuffer->dvkBuffer->size;
         
         for (int32 i = 0; i < mesh->primitives.size(); ++i)
         {
@@ -499,40 +632,61 @@ namespace vk_demo
             mesh->vertexCount   += primitive->vertexCount;
             mesh->triangleCount += primitive->triangleNum;
         }
+
+        m_VertexCount = mesh->vertexCount;
+        m_TriangleCount = mesh->triangleCount;
+
     }
     
-	DVKMesh* DVKModel::LoadMesh(const aiMesh* aiMesh, const aiScene* aiScene)
-	{
-		DVKMesh* mesh = new DVKMesh();
+	DVKMesh* DVKModel::LoadMesh(const aiMesh* aiMesh, const aiScene* aiScene) {
+        DVKMesh *mesh = new DVKMesh();
 
         // load material
-		aiMaterial* material = aiScene->mMaterials[aiMesh->mMaterialIndex];
-		if (material) {
-			FillMaterialTextures(material, mesh->material);
-		}
-        
+        aiMaterial *material = aiScene->mMaterials[aiMesh->mMaterialIndex];
+        if (material) {
+            FillMaterialTextures(material, mesh->material);
+        }
+
         // load bones
         std::unordered_map<uint32, DVKVertexSkin> skinInfoMap;
         if (aiMesh->mNumBones > 0 && loadSkin) {
             LoadSkin(skinInfoMap, mesh, aiMesh, aiScene);
         }
-        
+
         // load vertex data
         std::vector<float> vertices;
-        Vector3 mmin( MAX_int32,  MAX_int32,  MAX_int32);
+        Vector3 mmin(MAX_int32, MAX_int32, MAX_int32);
         Vector3 mmax(-MAX_int32, -MAX_int32, -MAX_int32);
         LoadVertexDatas(skinInfoMap, vertices, mmax, mmin, mesh, aiMesh, aiScene);
-        
+
         // load indices
         std::vector<uint32> indices;
-        LoadIndices(indices, aiMesh, aiScene);
+        if (gIsFirstModel) {
+            LoadIndices(indices, aiMesh, aiScene);
+            initializedIndices = indices;
+        }
+        else
+        {
+            indices = initializedIndices;
+        }
 
-		// load primitives
+        // load primitives
         LoadPrimitives(vertices, indices, mesh, aiMesh, aiScene);
-        
-		mesh->bounding.min = mmin;
-		mesh->bounding.max = mmax;
-		mesh->bounding.UpdateCorners();
+
+        if (gIsFirstModel) {
+            mesh->bounding.min = mmin;
+            mesh->bounding.max = mmax;
+            mesh->bounding.UpdateCorners();
+            initializedBounding = mesh->bounding;
+        }
+        else
+        {
+            mesh->bounding = initializedBounding;
+        }
+
+        curMeshVertices = vertices;
+        curMeshIndices = indices;
+        curMesh = mesh;
 
 		return mesh;
 	}
